@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HSK 2 — интерактивный тест</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f4f7f5;color:#26332f;margin:0;padding:16px}
+main{max-width:680px;margin:auto;background:#fff;border-radius:18px;padding:20px;box-shadow:0 4px 20px #0001}
+h1{font-size:25px;margin:12px 0}.muted{color:#66736e}.question{padding:17px 0;border-top:1px solid #e2e9e5}
+.sentence{font-size:22px;font-weight:bold;margin:10px 0}
+.choice{display:block;border:1px solid #dce5e0;border-radius:10px;padding:12px;margin:8px 0}
+.choice input{margin-right:9px;transform:scale(1.15)}
+button{font-size:16px;font-weight:bold;border:0;border-radius:10px;padding:14px 18px;margin:8px 6px 0 0}
+#check{background:#247b68;color:white}#again{background:#eaf0ed;color:#26332f}
+#result{display:none;background:#edf7f1;padding:16px;border-radius:12px;margin-top:18px}
+#score{font-size:32px;font-weight:bold;color:#247b68}
+.explain{display:none;padding:10px;background:#f3f7f5;border-radius:8px;margin-top:9px;font-size:14px}
+.correct{border:2px solid #27845f;background:#f0faf4}.wrong{border:2px solid #c45b50;background:#fff5f4}
+</style>
+</head>
+<body>
+<main>
+<div class="muted">HSK 2 · мини-тест</div>
+<h1>Проверь свой китайский</h1>
+<p class="muted">Выбери один ответ в каждом задании, затем нажми «Проверить ответы».</p>
+<div id="progress" class="muted">Отвечено: 0 из 5</div>
+
+<div class="question" id="q0">
+<b>1. Выбери подходящее слово</b><div class="sentence">我每天早上七点____起床。</div>
+<label class="choice"><input type="radio" name="q0" value="0">就</label>
+<label class="choice"><input type="radio" name="q0" value="1">才</label>
+<label class="choice"><input type="radio" name="q0" value="2">还</label>
+<label class="choice"><input type="radio" name="q0" value="3">再</label>
+<div class="explain">就 подчёркивает, что действие происходит рано или раньше ожидаемого.</div>
+</div>
+
+<div class="question" id="q1">
+<b>2. Выбери подходящее слово</b><div class="sentence">昨天我____朋友一起去看电影。</div>
+<label class="choice"><input type="radio" name="q1" value="0">跟</label>
+<label class="choice"><input type="radio" name="q1" value="1">给</label>
+<label class="choice"><input type="radio" name="q1" value="2">从</label>
+<label class="choice"><input type="radio" name="q1" value="3">对</label>
+<div class="explain">跟朋友一起 — вместе с другом.</div>
+</div>
+
+<div class="question" id="q2">
+<b>3. Выбери подходящее слово</b><div class="sentence">你喝____咖啡吗？</div>
+<label class="choice"><input type="radio" name="q2" value="0">过</label>
+<label class="choice"><input type="radio" name="q2" value="1">了</label>
+<label class="choice"><input type="radio" name="q2" value="2">着</label>
+<label class="choice"><input type="radio" name="q2" value="3">到</label>
+<div class="explain">喝过吗？ — Ты когда-нибудь пил кофе? 过 обозначает опыт.</div>
+</div>
+
+<div class="question" id="q3">
+<b>4. Выбери подходящее слово</b><div class="sentence">今天比昨天____。</div>
+<label class="choice"><input type="radio" name="q3" value="0">冷</label>
+<label class="choice"><input type="radio" name="q3" value="1">冷了</label>
+<label class="choice"><input type="radio" name="q3" value="2">很冷</label>
+<label class="choice"><input type="radio" name="q3" value="3">最冷</label>
+<div class="explain">比 + прилагательное: 今天比昨天冷 — Сегодня холоднее, чем вчера.</div>
+</div>
+
+<div class="question" id="q4">
+<b>5. Выбери подходящее слово</b><div class="sentence">我还没做____作业。</div>
+<label class="choice"><input type="radio" name="q4" value="0">完</label>
+<label class="choice"><input type="radio" name="q4" value="1">好</label>
+<label class="choice"><input type="radio" name="q4" value="2">到</label>
+<label class="choice"><input type="radio" name="q4" value="3">见</label>
+<div class="explain">做完作业 — закончить делать домашнее задание.</div>
+</div>
+
+<button type="button" id="check" onclick="checkAnswers()">Проверить ответы</button>
+<button type="button" id="again" onclick="resetQuiz()">Начать заново</button>
+<div id="result"><div id="score"></div><b>Твой результат</b><p id="message"></p></div>
+</main>
+
+<script>
+var answerKey = [0,0,0,0,0];
+var explanationsShown = false;
+
+function getSelected(i) {
+  var nodes = document.getElementsByName("q" + i);
+  for (var j=0; j<nodes.length; j++) {
+    if (nodes[j].checked) return nodes[j].value;
+  }
+  return null;
+}
+function updateProgress() {
+  var n=0;
+  for(var i=0;i<5;i++) if(getSelected(i)!==null) n++;
+  document.getElementById("progress").textContent="Отвечено: "+n+" из 5";
+}
+document.addEventListener("change", updateProgress);
+
+function checkAnswers() {
+  var missing=[];
+  for(var i=0;i<5;i++) if(getSelected(i)===null) missing.push(i+1);
+  if(missing.length>0) {
+    alert("Ответь на все вопросы. Остались номера: "+missing.join(", "));
+    return;
+  }
+  var score=0;
+  for(var i=0;i<5;i++) {
+    var q=document.getElementById("q"+i);
+    var selected=getSelected(i);
+    var labels=q.getElementsByClassName("choice");
+    for(var j=0;j<labels.length;j++) {
+      labels[j].classList.remove("correct","wrong");
+      var input=labels[j].getElementsByTagName("input")[0];
+      if(Number(input.value)===answerKey[i]) labels[j].classList.add("correct");
+      if(input.checked && Number(input.value)!==answerKey[i]) labels[j].classList.add("wrong");
+      input.disabled=true;
+    }
+    if(Number(selected)===answerKey[i]) score++;
+    q.getElementsByClassName("explain")[0].style.display="block";
+  }
+  document.getElementById("score").textContent=score+" / 5";
+  document.getElementById("message").textContent=score===5?"Отлично! Все ответы верные.":"Посмотри правильные ответы и объяснения.";
+  document.getElementById("result").style.display="block";
+  document.getElementById("check").disabled=true;
+  document.getElementById("result").scrollIntoView();
+}
+function resetQuiz() {
+  for(var i=0;i<5;i++) {
+    var q=document.getElementById("q"+i);
+    var inputs=q.getElementsByTagName("input");
+    var labels=q.getElementsByClassName("choice");
+    for(var j=0;j<inputs.length;j++){inputs[j].checked=false;inputs[j].disabled=false;}
+    for(var j=0;j<labels.length;j++) labels[j].classList.remove("correct","wrong");
+    q.getElementsByClassName("explain")[0].style.display="none";
+  }
+  document.getElementById("result").style.display="none";
+  document.getElementById("check").disabled=false;
+  updateProgress();
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
